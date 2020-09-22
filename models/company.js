@@ -1,10 +1,16 @@
 const db = require("../db");
 
-/** Collection of related methods for books. */
+/** Collection of related methods for books. 
+ * GET /companies => returns a list of company objects
+ * GET /companies/:handle => returns a single company, with a list of jobs objects related to that company
+ * POST /companies => creates a new company, requires admin
+ * PATCH /companies/:handle => updates a company, requires admin
+ * DELETE /companies/:handle => deletes a company, requires admin
+*/
 
 class Company {
 
-  /** Return array of company data:
+  /** Return array of all companies:
    *
    * => [ {handle, name, num_employees, description, logo_url}, ... ]
    *
@@ -44,7 +50,7 @@ class Company {
   }
 
 
-  /** given a handle, return company data with that handle:
+  /** given a handle, return a company with that handle:
    *
    * => { handle, name, num_employees, description, logo_url}
    *
@@ -81,7 +87,7 @@ class Company {
   }
 
 
-  /** create company in database from data, return company data:
+  /** create company in database, return company data:
    *
    * { handle, name, num_employees, description, logo_url}
    *
@@ -115,7 +121,7 @@ class Company {
     return result.rows[0];
   }
 
-  /** Update company with matching handle to data, return updated company.
+  /** Update company with matching handle, return updated company.
 
    * { handle, name, num_employees, description, logo_url}
    *

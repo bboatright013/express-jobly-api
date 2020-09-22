@@ -1,10 +1,16 @@
 const db = require("../db");
 
-/** Collection of related methods for books. */
+/** Collection of related methods for jobs.
+ * GET /jobs => returns a list of job objects
+ * GET /jobs/:id => returns a single job
+ * POST /jobs => creates a new job, requires admin
+ * PATCH /jobs/:id => updates a job, requires admin
+ * DELETE /jobs/:id => deletes a job, requires admin
+ */
 
 class Job {
 
-  /** Return array of jobs data:
+  /** Return array of all jobs :
    *
    * => {jobs: [job, ...]}
    *
@@ -43,7 +49,7 @@ class Job {
   }
 
 
-  /** given an id, return job data with that id:
+  /** given an id, return job with that id:
    *
    * => {job: jobData}
    *
@@ -68,7 +74,7 @@ class Job {
   }
 
 
-  /** create company in database from data, return company data:
+  /** create a job in database from data, return that job:
    *
    * {job: jobData}
    *
@@ -101,7 +107,7 @@ class Job {
     return result.rows[0];
   }
 
-  /** Update data with matching ID to data, return updated job.
+  /** Update job with matching ID, return updated job.
 
    * { title, salary, equity}
    *
@@ -137,7 +143,7 @@ class Job {
     return result.rows[0];
   }
 
-  /** remove book with matching isbn. Returns undefined. */
+  /** remove job with matching id. */
 
   static async remove(id) {
     const result = await db.query(

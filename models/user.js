@@ -1,10 +1,16 @@
 const db = require("../db");
 
-/** Collection of related methods for books. */
+/** Collection of related methods for users.
+ * GET /users => returns a list of company objects
+ * GET /users/:username => returns a single company
+ * POST /users => creates a new company, 
+ * PATCH /users/:username => updates a company, requires admin
+ * DELETE /users/:username => deletes a company, requires admin
+ */
 
 class User {
 
-  /** Return array of users data:
+  /** Return array of all users:
    *
    * => {users: [{username, first_name, last_name, email}, ...]}
    *
@@ -24,7 +30,7 @@ class User {
         return allUsers.rows;
     }
 
-  /** given a username, return user data with that username:
+  /** given a username, return a user:
    *
    * => {user: {username, first_name, last_name, email, photo_url}}
    *
@@ -49,7 +55,7 @@ class User {
     return user.rows[0];
   }
 
-  /** create a user in database from data, return user data:
+  /** create a user in database, return that user data:
    *
    * {username, password, first_name, last_name, email, photo_url}
    *
@@ -86,7 +92,7 @@ class User {
     return result.rows[0];
   }
 
-  /** Update data with matching username to data, return updated user.
+  /** Update user with matching username, return updated user.
 
    * {username, password, first_name, last_name, email, photo_url}
    *
@@ -123,7 +129,7 @@ class User {
     return result.rows[0];
   }
 
-  /** remove book with matching isbn. Returns undefined. */
+  /** remove user with matching username. */
 
   static async remove(username) {
     const result = await db.query(
