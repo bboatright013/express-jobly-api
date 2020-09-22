@@ -67,9 +67,8 @@ describe('users routes test', function() {
                 "email" : "myemail@cmail.com"
             });
             
-            const user = response.body.user;
-            expect(user.username).toEqual("Myname");
-            expect(user.first_name).toEqual("First");
+            const status = response.status;
+            expect(status).toEqual(201);
          });
 
         test("should return 2 users",

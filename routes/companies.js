@@ -3,6 +3,7 @@ const Company = require("../models/company");
 const jsonschema = require("jsonschema");
 const companySchema = require("../schemas/company.json");
 const updateCompanySchema = require("../schemas/updateCompany.json");
+const { ensureLoggedIn, ensureAdmin } = require("../middleware/auth")
 
 const { json } = require("express");
 const ExpressError = require("../helpers/expressError");
@@ -12,7 +13,7 @@ const router = new express.Router();
 
 /** GET / => {companies: [companyData, ...]}  */
 
-router.get("/", async function (req, res, next) {
+router.get("/", ensureLoggedIn, async function (req, res, next) {
     try {
       const companies = await Company.findAll(req.query);
       return res.json({ companies });
@@ -24,7 +25,7 @@ router.get("/", async function (req, res, next) {
 
 /** GET /:handle => {company: companyData}  */
 
-router.get("/:handle", async function (req, res, next) {
+router.get("/:handle", ensureLoggedIn, async function (req, res, next) {
     try {
       const company = await Company.findOne(req.params.handle);
       return res.json({ company });
@@ -35,7 +36,7 @@ router.get("/:handle", async function (req, res, next) {
   
   /** POST / companyData => {company: companyData}  */
 
-router.post("/", async function (req, res, next) {
+router.post("/",ensureAdmin, async function (req, res, next) {
     try {
         const result = jsonschema.validate(req.body, companySchema);
         if(!result.valid){
@@ -52,7 +53,7 @@ router.post("/", async function (req, res, next) {
 
 /** PATCH /:handle   companyData => {company: companyData}  */
 
-router.patch("/:handle", async function (req, res, next) {
+router.patch("/:handle",ensureAdmin, async function (req, res, next) {
     try {
         const result = jsonschema.validate(req.body, updateCompanySchema);
         if(!result.valid){
@@ -71,7 +72,7 @@ router.patch("/:handle", async function (req, res, next) {
   
 /** DELETE / => {company: companyData}  */
 
-router.delete("/:handle", async function (req, res, next) {
+router.delete("/:handle",ensureAdmin, async function (req, res, next) {
     try {
         await Company.remove(req.params.handle);
         return res.json({message: "Company deleted"});

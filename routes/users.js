@@ -3,9 +3,12 @@ const User = require("../models/user");
 const jsonschema = require("jsonschema");
 const userSchema = require("../schemas/user.json");
 const updateUserSchema = require("../schemas/updateUser.json");
+const jwt = require("jsonwebtoken");
+const { ensureCorrectUser } = require("../middleware/auth")
 
 const { json } = require("express");
 const ExpressError = require("../helpers/expressError");
+const { SECRET_KEY } = require("../../express-messagely-solution/config");
 
 const router = new express.Router();
 
@@ -33,7 +36,7 @@ router.get("/:username", async function (req, res, next) {
     }
   });
   
-  /** POST / userdata => {user: user}  */
+  /** POST / userdata => {token: token}  */
 
 router.post("/", async function (req, res, next) {
     try {
@@ -43,8 +46,9 @@ router.post("/", async function (req, res, next) {
           let error = new ExpressError(listOfErrors, 400);
           return next(error);
         }
-        const user = await User.create(req.body);
-        return res.status(201).json({ user });
+        const {username} = await User.create(req.body);
+        let token = jwt.sign({username}, SECRET_KEY);
+        return res.status(201).json({ token });
     } catch (err) {
       return next(err);
     }
@@ -52,7 +56,7 @@ router.post("/", async function (req, res, next) {
 
 /** PATCH /:username   userData => {user: {username, first_name, last_name, email, photo_url}}  */
 
-router.patch("/:username", async function (req, res, next) {
+router.patch("/:username",ensureCorrectUser, async function (req, res, next) {
     try {
         const result = jsonschema.validate(req.body, updateUserSchema);
         if(!result.valid){
@@ -71,7 +75,7 @@ router.patch("/:username", async function (req, res, next) {
   
 /** DELETE / => {user : {username, first_name, last_name, email, photo_url}}  */
 
-router.delete("/:username", async function (req, res, next) {
+router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
     try {
         await User.remove(req.params.username);
         return res.json({message: "User deleted"});
