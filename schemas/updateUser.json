@@ -70,6 +70,16 @@
             "examples": [
                 "myimage.jpg"
             ]
+        },
+        "is_admin": {
+            "$id": "#/properties/is_admin",
+            "type": "boolean",
+            "title": "The is_admin schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                false
+            ]
         }
     },
     "additionalProperties": true

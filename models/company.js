@@ -77,7 +77,6 @@ class Company {
 
     let companyWithJobs = company.rows[0];
     companyWithJobs["jobs"] = jobs.rows;
-      console.log(companyWithJobs);
     return companyWithJobs;
   }
 

@@ -1,16 +1,26 @@
 const app = require("../../app");
 const db = require("../../db");
 const request = require("supertest");
+const jwt = require("jsonwebtoken");
+const {SECRET_KEY} = require("../../config")
 const User = require("../../models/user");
 
+
+let testUserToken;
+let testAdminToken;
+
 describe('users routes test', function() {
+
+
     beforeAll(async () => {
         process.env.NODE_ENV = 'test';
 
       });
       
       afterAll(async function () {
-        await db.query('DELETE FROM users');
+        await db.query('DELETE FROM jobs');
+        await db.query('DELETE FROM companies');
+        await db.query('DELETE FROM users')
         await db.end();
       });
 
@@ -22,14 +32,20 @@ describe('users routes test', function() {
             password,
             first_name,
             last_name,
-            email
+            email,
+            is_admin
             ) 
-             VALUES ('Username', 'Password', 'First', 'Last', 'myemail@bmail.com') 
+             VALUES ('Username', 'Password', 'First', 'Last', 'myemail@bmail.com', 'true') 
              RETURNING username,
              first_name,
              last_name,
-             email`);
+             email,
+             is_admin`);
 
+             const testUser = { username: "Username" };
+             const testAdmin = { username: "admin" };
+             testUserToken = jwt.sign(testUser, SECRET_KEY);
+             testAdminToken = jwt.sign(testAdmin, SECRET_KEY);
       });
       
     describe("GET /users", function() {
@@ -95,7 +111,8 @@ describe('users routes test', function() {
                 "password" : "Password2",
                 "first_name" : "First2",
                 "last_name" : "Last2",
-                "email" : "otroemail@demail.com"
+                "email" : "otroemail@demail.com",
+                _token : testUserToken
             });
             const user = response.body.user;
             expect(user.first_name).toEqual("First2");
@@ -106,7 +123,7 @@ describe('users routes test', function() {
     describe("DELETE /users/:username", function() {
         test("should delete a user",
         async function () {
-          const response = await request(app).delete('/users/Username');
+          const response = await request(app).delete('/users/Username').send( {_token : testUserToken});
           const message = response.body.message;
           expect(message).toEqual("User deleted");
         });

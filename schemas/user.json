@@ -12,7 +12,8 @@
             "first_name": "First",
             "last_name": "Last",
             "email": "myemail@somemail.com",
-            "photo_url": "myimage.jpg"
+            "photo_url": "myimage.jpg",
+            "is_admin" : false
         }
     ],
     "required": [
@@ -81,6 +82,16 @@
             "default": "",
             "examples": [
                 "myimage.jpg"
+            ]
+        },
+        "is_admin": {
+            "$id": "#/properties/is_admin",
+            "type": "boolean",
+            "title": "The is_admin schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                true
             ]
         }
     },

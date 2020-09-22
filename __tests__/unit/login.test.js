@@ -34,6 +34,7 @@ describe('login test', function() {
         test("should return token",
         async function () {
           const response = await request(app).post('/login').send({'username': 'Username', 'password' : 'Password'});
+          // console.log(response);
           expect(response).toBeTruthy();
         
         });

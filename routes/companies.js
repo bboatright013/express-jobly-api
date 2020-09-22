@@ -57,13 +57,11 @@ router.patch("/:handle",ensureAdmin, async function (req, res, next) {
     try {
         const result = jsonschema.validate(req.body, updateCompanySchema);
         if(!result.valid){
-            console.log("not valid");
             let listOfErrors = result.errors.map( error => error.stack);
             let error = new ExpressError(listOfErrors, 400);
             return next(error);
         }
         const company = await Company.update(req.params.handle, req.body);
-        console.log("valid: ",company);
         return res.json({ company });
     } catch (err) {
         return next(err);

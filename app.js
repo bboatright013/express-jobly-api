@@ -16,16 +16,17 @@ const loginRoute = require("./routes/auth");
 
 app.use(express.json());
 
+// get auth token for all routes
 app.use(authenticateJWT);
 
 // add logging system
 app.use(morgan("tiny"));
 
 //add routes
-app.use("/login", loginRoute)
 app.use("/companies", companyRoutes);
 app.use("/jobs", jobsRoutes);
 app.use("/users", usersRoutes);
+app.use("/login", loginRoute)
 
 
 

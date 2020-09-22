@@ -1,8 +1,11 @@
 const app = require("../../app");
 const db = require("../../db");
 const request = require("supertest");
+const jwt = require("jsonwebtoken");
+const {SECRET_KEY} = require("../../config")
 const Job = require("../../models/job");
-
+let testUserToken;
+let testAdminToken;
 describe('jobs routes test', function() {
     beforeAll(async () => {
         process.env.NODE_ENV = 'test';
@@ -19,13 +22,13 @@ describe('jobs routes test', function() {
              num_employees,
              description,
              logo_url`);
-
+    
       });
       
       afterAll(async function () {
         await db.query('DELETE FROM jobs');
         await db.query('DELETE FROM companies');
-
+        await db.query('DELETE FROM users')
         await db.end();
       });
 
@@ -45,13 +48,17 @@ describe('jobs routes test', function() {
              equity,
              company_handle,
              date_posted`);
+             const testUser = { username: "Username", "is_admin" : true };
+             const testAdmin = { username: "admin" };
+             testUserToken = jwt.sign(testUser, SECRET_KEY);
+             testAdminToken = jwt.sign(testAdmin, SECRET_KEY);
 
       });
       
     describe("GET /jobs", function() {
         test("should return list of jobs",
         async function () {
-          const response = await request(app).get('/jobs');
+          const response = await request(app).get('/jobs').send({_token : testUserToken});
           const jobs = response.body;
           expect(jobs.jobs[0].title).toEqual("Commander");
           expect(jobs.jobs[0].salary).toEqual(100000);
@@ -62,7 +69,7 @@ describe('jobs routes test', function() {
     describe("GET /jobs/:id", function() {
         test("should return specific job posting",
         async function () {
-          const response = await request(app).get('/jobs/1');
+          const response = await request(app).get('/jobs/1').send({_token : testUserToken});
 
           const job = response.body.job;
           expect(job.title).toEqual("Commander");
@@ -79,7 +86,9 @@ describe('jobs routes test', function() {
                 "title": "Master",
                 "salary" : 200000,
                 "equity" : 0.5,
-                "company_handle" : "ABC"
+                "company_handle" : "ABC",
+                _token : testUserToken
+
             });
             
             const job = response.body.job;
@@ -94,9 +103,11 @@ describe('jobs routes test', function() {
                     "title": "Master",
                     "salary" : 200000,
                     "equity" : 0.5,
-                    "company_handle" : "ABC"
+                    "company_handle" : "ABC",
+                    _token : testUserToken
+
                 });
-            const response = await request(app).get('/jobs');
+            const response = await request(app).get('/jobs').send({_token : testUserToken});
             const jobs = response.body;
             expect(jobs.jobs).toHaveLength(2);
                 });
@@ -110,7 +121,9 @@ describe('jobs routes test', function() {
                 "title" : "Numberline",
                 "salary" : 100,
                 "equity" : 0.8,
-                "company_handle" : "ABC"
+                "company_handle" : "ABC",
+                _token : testUserToken
+
             });
             const job = response.body.job;
             expect(job.title).toEqual("Numberline");
@@ -121,7 +134,7 @@ describe('jobs routes test', function() {
     describe("DELETE /jobs/:id", function() {
         test("should delete a job",
         async function () {
-          const response = await request(app).delete('/jobs/1');
+          const response = await request(app).delete('/jobs/1').send({_token : testUserToken});
           const message = response.body.message;
           expect(message).toEqual("Job deleted");
         });
