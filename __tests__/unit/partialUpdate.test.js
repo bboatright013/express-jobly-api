@@ -11,7 +11,6 @@ describe("partialUpdate()", () => {
     
     let query = sqlForPartialUpdate(atable, items, akey, id);
 
-    // FIXME: write real tests!
     expect(query).toEqual({"query" : "UPDATE table SET 0=$1 WHERE key=$2 RETURNING *", "values" : ["key", 1]});
 
   });
